@@ -6,6 +6,7 @@ import { FoodSearch } from "@/components/FoodSearch";
 import { FpeCalculatorCard } from "@/components/FpeCalculatorCard";
 import { MealDiary } from "@/components/MealDiary";
 import { DailyGoalsCard } from "@/components/DailyGoalsCard";
+import { AppNav } from "@/components/AppNav";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -20,6 +21,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
+      <AppNav />
       <div className="max-w-2xl mx-auto space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold">{APP_NAME}</h1>

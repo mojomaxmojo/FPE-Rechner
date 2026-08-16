@@ -1,0 +1,97 @@
+import { useRecipes } from "@/hooks/useRecipes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
+import {
+  sumIngredientNutrients,
+  calculateFpe,
+  calculateNetCarbs,
+  calculateCalories,
+} from "@/lib/fpe";
+
+export function RecipeList() {
+  const { data: recipes, isLoading, error } = useRecipes();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        Rezepte werden geladen…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-sm text-destructive">
+        Fehler beim Laden der Rezepte.
+      </p>
+    );
+  }
+
+  if (!recipes || recipes.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        Noch keine Rezepte vorhanden.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {recipes.map((recipe) => {
+        const totals = sumIngredientNutrients(recipe.ingredients);
+        const fpe = calculateFpe(totals.fatG, totals.proteinG);
+        const netCarbs = calculateNetCarbs(totals.carbsG, totals.fiberG);
+        const kcal = calculateCalories(totals.carbsG, totals.proteinG, totals.fatG);
+
+        return (
+          <Card key={recipe.id}>
+            <CardHeader>
+              <CardTitle>{recipe.name}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {recipe.description && (
+                <p className="text-muted-foreground">{recipe.description}</p>
+              )}
+
+              <div>
+                <p className="text-sm font-medium mb-1">Zutaten</p>
+                <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                  {recipe.ingredients.map((ingredient) => (
+                    <li key={ingredient.id}>
+                      {ingredient.amountG}g {ingredient.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {recipe.instructions && (
+                <div>
+                  <p className="text-sm font-medium mb-1">Zubereitung</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-line">
+                    {recipe.instructions}
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="rounded-xl bg-muted p-3 text-center">
+                  <p className="text-xs text-muted-foreground">kcal</p>
+                  <p className="text-lg font-semibold">{Math.round(kcal)}</p>
+                </div>
+                <div className="rounded-xl bg-muted p-3 text-center">
+                  <p className="text-xs text-muted-foreground">Netto-KH</p>
+                  <p className="text-lg font-semibold">{netCarbs.toFixed(1)}g</p>
+                </div>
+                <div className="rounded-xl bg-muted p-3 text-center">
+                  <p className="text-xs text-muted-foreground">FPE</p>
+                  <p className="text-lg font-semibold">{fpe.toFixed(2)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
