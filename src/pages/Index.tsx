@@ -5,6 +5,7 @@ import type { FoodItem } from "@/types/nutrition";
 import { FoodSearch } from "@/components/FoodSearch";
 import { FpeCalculatorCard } from "@/components/FpeCalculatorCard";
 import { MealDiary } from "@/components/MealDiary";
+import { DailyGoalsCard } from "@/components/DailyGoalsCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -28,6 +29,8 @@ const Index = () => {
         </div>
 
         <FoodSearch onSelect={setSelectedItem} />
+
+        <DailyGoalsCard />
 
         {selectedItem && (
           <div className="space-y-4">
