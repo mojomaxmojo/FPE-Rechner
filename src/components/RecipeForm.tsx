@@ -120,26 +120,45 @@ export function RecipeForm({ recipeToEdit, onSaved, onCancel }: RecipeFormProps)
 
           {ingredients.length > 0 && (
             <div className="space-y-2">
-              {ingredients.map((ingredient) => (
+              {ingredients.map((ingredient, index) => (
                 <div
                   key={ingredient.id}
-                  className="flex items-center justify-between rounded-xl border p-3"
+                  className="flex items-center justify-between gap-3 rounded-xl border p-3"
                 >
-                  <div>
-                    <p className="font-medium">{ingredient.name}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{ingredient.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {ingredient.amountG}g ·{" "}
                       {ingredient.source === "search" ? "aus Suche" : "manuell"}
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemoveIngredient(ingredient.id)}
-                    aria-label="Zutat entfernen"
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <div className="w-24">
+                      <Input
+                        type="number"
+                        min={1}
+                        value={ingredient.amountG}
+                        onChange={(e) => {
+                          const amount = Number(e.target.value);
+                          if (!Number.isFinite(amount) || amount <= 0) return;
+                          setIngredients((prev) =>
+                            prev.map((i, idx) =>
+                              idx === index ? { ...i, amountG: amount } : i
+                            )
+                          );
+                        }}
+                        aria-label="Menge in Gramm"
+                      />
+                    </div>
+                    <span className="text-sm text-muted-foreground">g</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveIngredient(ingredient.id)}
+                      aria-label="Zutat entfernen"
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
