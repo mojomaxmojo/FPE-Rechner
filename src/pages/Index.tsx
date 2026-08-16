@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select.tsx';
 import { FoodSearch } from '@/components/FoodSearch.tsx';
+import { DailyGoalsCard } from '@/components/DailyGoalsCard.tsx';
 import { FpeCalculatorCard } from '@/components/FpeCalculatorCard.tsx';
 import { MealDiary } from '@/components/MealDiary.tsx';
 import { APP_NAME } from '@/config/app.ts';
@@ -112,6 +113,7 @@ const Index = () => {
           </div>
         )}
 
+        <DailyGoalsCard />
         <FpeCalculatorCard items={todayEntries} />
         <MealDiary />
       </div>
