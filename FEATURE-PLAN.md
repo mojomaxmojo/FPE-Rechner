@@ -283,7 +283,7 @@ Es sollte ein JSON-Objekt mit Produkten erscheinen. Zusätzlich muss `npm run bu
 
 - [x] Schritt 1 — Konfiguration (mit echten npubs), Typen, FPE-Rechenfunktionen (`src/config/app.ts`, `src/types/nutrition.ts`, `src/lib/fpe.ts`)
 - [x] Schritt 2 — Open Food Facts Anbindung (`src/config/openFoodFacts.ts`, `src/lib/openFoodFacts.ts`, `src/hooks/useFoodSearch.ts`)
-- [ ] Schritt 3 — Zugriffssperre nur für mojo & susanne (`useAuthorized.ts`, `AccessGate.tsx`, Anpassung `AppRouter.tsx`)
+- [x] Schritt 3 — Zugriffssperre nur für mojo & susanne (`useAuthorized.ts`, `AccessGate.tsx`, Anpassung `AppRouter.tsx`)
 - [ ] Schritt 4 — FPE-Rechner Oberfläche (`FoodSearch.tsx`, `FpeCalculatorCard.tsx`, Neufassung `Index.tsx`)
 - [ ] Schritt 5 — Mahlzeiten-Tagebuch (`useMealDiary.ts`, `MealDiary.tsx`)
 - [ ] Schritt 6 — Dashboard mit Tageszielen (`src/config/goals.ts`, `useDailyGoals.ts`, `DailyGoalsCard.tsx`)
