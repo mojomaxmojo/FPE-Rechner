@@ -216,7 +216,7 @@ Es sollte ein JSON-Objekt mit Produkten in der Konsole erscheinen. Zusätzlich: 
 - [x] Schritt 1 — Konfiguration, Typen, FPE-Rechenfunktionen (`src/config/app.ts`, `src/types/nutrition.ts`, `src/lib/fpe.ts`)
 - [x] Schritt 2 — Open Food Facts Anbindung (`src/config/openFoodFacts.ts`, `src/lib/openFoodFacts.ts`, `src/hooks/useFoodSearch.ts`)
 - [x] Schritt 3 — Zugriffssperre nur für mojo & susanne (`useAuthorized.ts`, `AccessGate.tsx`, Anpassung `AppRouter.tsx`)
-- [ ] Schritt 4 — FPE-Rechner Oberfläche (`FoodSearch.tsx`, `FpeCalculatorCard.tsx`, Neufassung `Index.tsx`)
+- [x] Schritt 4 — FPE-Rechner Oberfläche (`FoodSearch.tsx`, `FpeCalculatorCard.tsx`, Neufassung `Index.tsx`)
 - [ ] Schritt 5 — Mahlzeiten-Tagebuch (`useMealDiary.ts`, `MealDiary.tsx`)
 - [ ] Schritt 6 — Dashboard mit Tageszielen (`src/config/goals.ts`, `useDailyGoals.ts`, `DailyGoalsCard.tsx`)
 - [ ] Schritt 7 — Verschlüsselte Rezepte auf relay.mojobus.co (`recipes.ts`, `recipeCrypto.ts`, `useRecipes.ts`, `usePublishRecipe.ts`, `RecipeForm.tsx`, `RecipeList.tsx`, `RecipesPage.tsx`, `NIP.md`)
