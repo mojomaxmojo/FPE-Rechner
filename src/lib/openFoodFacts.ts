@@ -53,8 +53,11 @@ export async function searchOffProducts(query: string): Promise<unknown[]> {
     return [];
   }
 
-  const url = new URL("/api/v2/search", OFF_API_BASE_URL);
+  // Use the legacy search endpoint: the v2 endpoint currently ignores
+  // search_terms and returns the same products for every query.
+  const url = new URL("/cgi/search.pl", OFF_API_BASE_URL);
   url.searchParams.set("search_terms", trimmed);
+  url.searchParams.set("search_simple", "1");
   url.searchParams.set("json", "1");
   url.searchParams.set("page_size", String(OFF_SEARCH_PAGE_SIZE));
   url.searchParams.set("lc", OFF_SEARCH_LANGUAGE);
