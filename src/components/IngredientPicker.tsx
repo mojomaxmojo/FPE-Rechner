@@ -9,56 +9,90 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import type { FoodItem, Ingredient, NutrientValues } from "@/types/nutrition";
+import type { FoodItem, Ingredient } from "@/types/nutrition";
 
 interface IngredientPickerProps {
   onAdd: (ingredient: Ingredient) => void;
 }
 
-const emptyManualNutrients: NutrientValues = {
-  kcal: 0,
-  carbsG: 0,
-  fiberG: 0,
-  proteinG: 0,
-  fatG: 0,
+type ManualNutrientFields = {
+  kcal: string;
+  carbsG: string;
+  fiberG: string;
+  proteinG: string;
+  fatG: string;
 };
+
+const emptyManualNutrients: ManualNutrientFields = {
+  kcal: "",
+  carbsG: "",
+  fiberG: "",
+  proteinG: "",
+  fatG: "",
+};
+
+function parsePositiveInt(value: string): number | null {
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+  const num = Number(trimmed);
+  if (!Number.isFinite(num) || num <= 0 || !Number.isInteger(num)) return null;
+  return num;
+}
+
+function parseNonNegativeNumber(value: string): number | null {
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+  const num = Number(trimmed);
+  if (!Number.isFinite(num) || num < 0) return null;
+  return num;
+}
 
 export function IngredientPicker({ onAdd }: IngredientPickerProps) {
   const [activeTab, setActiveTab] = useState("search");
 
   // Weg A
   const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
-  const [searchAmountG, setSearchAmountG] = useState<number>(100);
+  const [searchAmountG, setSearchAmountG] = useState<string>("100");
 
   // Weg B
   const [manualName, setManualName] = useState("");
-  const [manualAmountG, setManualAmountG] = useState<number>(100);
-  const [manualNutrients, setManualNutrients] = useState<NutrientValues>(emptyManualNutrients);
+  const [manualAmountG, setManualAmountG] = useState<string>("100");
+  const [manualNutrients, setManualNutrients] = useState<ManualNutrientFields>(emptyManualNutrients);
 
   const handleAddFromSearch = () => {
-    if (!selectedItem || searchAmountG <= 0) return;
+    const amount = parsePositiveInt(searchAmountG);
+    if (!selectedItem || amount === null) return;
 
     const ingredient: Ingredient = {
       id: `${selectedItem.id}-${Date.now()}`,
       name: selectedItem.name,
-      amountG: searchAmountG,
+      amountG: amount,
       nutrientsPer100g: selectedItem.nutrientsPer100g,
       source: "search",
     };
 
     onAdd(ingredient);
     setSelectedItem(null);
-    setSearchAmountG(100);
+    setSearchAmountG("100");
+  };
+
+  const parsedManual = {
+    amountG: parsePositiveInt(manualAmountG),
+    kcal: parseNonNegativeNumber(manualNutrients.kcal),
+    carbsG: parseNonNegativeNumber(manualNutrients.carbsG),
+    fiberG: parseNonNegativeNumber(manualNutrients.fiberG),
+    proteinG: parseNonNegativeNumber(manualNutrients.proteinG),
+    fatG: parseNonNegativeNumber(manualNutrients.fatG),
   };
 
   const manualValid =
     manualName.trim().length > 0 &&
-    manualAmountG > 0 &&
-    manualNutrients.kcal >= 0 &&
-    manualNutrients.carbsG >= 0 &&
-    manualNutrients.fiberG >= 0 &&
-    manualNutrients.proteinG >= 0 &&
-    manualNutrients.fatG >= 0;
+    parsedManual.amountG !== null &&
+    parsedManual.kcal !== null &&
+    parsedManual.carbsG !== null &&
+    parsedManual.fiberG !== null &&
+    parsedManual.proteinG !== null &&
+    parsedManual.fatG !== null;
 
   const handleAddManual = () => {
     if (!manualValid) return;
@@ -66,20 +100,20 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
     const ingredient: Ingredient = {
       id: `manual-${Date.now()}`,
       name: manualName.trim(),
-      amountG: manualAmountG,
+      amountG: parsedManual.amountG!,
       nutrientsPer100g: {
-        kcal: manualNutrients.kcal,
-        carbsG: manualNutrients.carbsG,
-        fiberG: manualNutrients.fiberG,
-        proteinG: manualNutrients.proteinG,
-        fatG: manualNutrients.fatG,
+        kcal: parsedManual.kcal!,
+        carbsG: parsedManual.carbsG!,
+        fiberG: parsedManual.fiberG!,
+        proteinG: parsedManual.proteinG!,
+        fatG: parsedManual.fatG!,
       },
       source: "manual",
     };
 
     onAdd(ingredient);
     setManualName("");
-    setManualAmountG(100);
+    setManualAmountG("100");
     setManualNutrients(emptyManualNutrients);
   };
 
@@ -102,7 +136,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
                 type="number"
                 min={1}
                 value={searchAmountG}
-                onChange={(e) => setSearchAmountG(Number(e.target.value) || 0)}
+                onChange={(e) => setSearchAmountG(e.target.value)}
               />
             </div>
             <Button onClick={handleAddFromSearch} className="w-full">
@@ -131,7 +165,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
             type="number"
             min={1}
             value={manualAmountG}
-            onChange={(e) => setManualAmountG(Number(e.target.value) || 0)}
+            onChange={(e) => setManualAmountG(e.target.value)}
           />
         </div>
 
@@ -146,7 +180,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
               onChange={(e) =>
                 setManualNutrients((prev) => ({
                   ...prev,
-                  kcal: Number(e.target.value) || 0,
+                  kcal: e.target.value,
                 }))
               }
             />
@@ -161,7 +195,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
               onChange={(e) =>
                 setManualNutrients((prev) => ({
                   ...prev,
-                  carbsG: Number(e.target.value) || 0,
+                  carbsG: e.target.value,
                 }))
               }
             />
@@ -176,7 +210,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
               onChange={(e) =>
                 setManualNutrients((prev) => ({
                   ...prev,
-                  fiberG: Number(e.target.value) || 0,
+                  fiberG: e.target.value,
                 }))
               }
             />
@@ -191,7 +225,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
               onChange={(e) =>
                 setManualNutrients((prev) => ({
                   ...prev,
-                  proteinG: Number(e.target.value) || 0,
+                  proteinG: e.target.value,
                 }))
               }
             />
@@ -206,7 +240,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
               onChange={(e) =>
                 setManualNutrients((prev) => ({
                   ...prev,
-                  fatG: Number(e.target.value) || 0,
+                  fatG: e.target.value,
                 }))
               }
             />
