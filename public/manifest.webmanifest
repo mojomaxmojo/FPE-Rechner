@@ -1,0 +1,17 @@
+{
+  "name": "FPE Rechner",
+  "short_name": "FPE",
+  "description": "FPE-Rechner und Mahlzeiten-Tagebuch für Typ-1-Diabetes und Keto.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
