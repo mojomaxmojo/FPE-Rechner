@@ -1,13 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import type { FoodItem } from "@/types/nutrition";
-import { searchOffProducts, mapOffProductToFoodItem } from "@/lib/openFoodFacts";
+import {
+  searchOffProducts,
+  searchOffProductByEan,
+  mapOffProductToFoodItem,
+} from "@/lib/openFoodFacts";
+
+function looksLikeEan(query: string): boolean {
+  const normalized = query.replace(/[\s\-]/g, "");
+  return /^\d{8,14}$/.test(normalized);
+}
 
 export function useFoodSearch(query: string) {
   const normalizedQuery = query.trim().toLowerCase();
+  const isEan = looksLikeEan(query);
 
   return useQuery<FoodItem[]>({
-    queryKey: ["foodSearch", normalizedQuery],
+    queryKey: ["foodSearch", normalizedQuery, isEan ? "ean" : "text"],
     queryFn: async () => {
+      if (isEan) {
+        const item = await searchOffProductByEan(query);
+        return item ? [item] : [];
+      }
+
       const products = await searchOffProducts(query);
       const items = products
         .map(mapOffProductToFoodItem)

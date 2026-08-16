@@ -81,6 +81,39 @@ export async function searchOffProducts(query: string): Promise<unknown[]> {
 }
 
 /**
+ * Fetch a single product by EAN/code via the OFF product endpoint.
+ */
+export async function searchOffProductByEan(ean: string): Promise<FoodItem | null> {
+  const normalizedEan = ean.replace(/[\s\-]/g, "");
+  if (!/^\d+$/.test(normalizedEan) || normalizedEan.length < 8) {
+    return null;
+  }
+
+  const url = new URL(`/api/v2/product/${normalizedEan}`, OFF_API_BASE_URL);
+  url.searchParams.set(
+    "fields",
+    "code,product_name,brands,nutriments",
+  );
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Open Food Facts EAN lookup failed: ${response.status}`);
+  }
+
+  const data = (await response.json()) as { status?: number; product?: unknown };
+  if (data.status !== 1 || !data.product) {
+    return null;
+  }
+
+  return mapOffProductToFoodItem(data.product);
+}
+
+/**
  * Map an Open Food Facts raw product to a FoodItem.
  * Returns null if any of the five required nutrient values is missing.
  */
