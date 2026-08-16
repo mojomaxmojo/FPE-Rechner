@@ -285,7 +285,7 @@ Es sollte ein JSON-Objekt mit Produkten erscheinen. Zusätzlich muss `npm run bu
 - [x] Schritt 2 — Open Food Facts Anbindung (`src/config/openFoodFacts.ts`, `src/lib/openFoodFacts.ts`, `src/hooks/useFoodSearch.ts`)
 - [x] Schritt 3 — Zugriffssperre nur für mojo & susanne (`useAuthorized.ts`, `AccessGate.tsx`, Anpassung `AppRouter.tsx`)
 - [x] Schritt 4 — FPE-Rechner Oberfläche (`FoodSearch.tsx`, `FpeCalculatorCard.tsx`, Neufassung `Index.tsx`)
-- [ ] Schritt 5 — Mahlzeiten-Tagebuch (`useMealDiary.ts`, `MealDiary.tsx`)
+- [x] Schritt 5 — Mahlzeiten-Tagebuch (`useMealDiary.ts`, `MealDiary.tsx`)
 - [ ] Schritt 6 — Dashboard mit Tageszielen (`src/config/goals.ts`, `useDailyGoals.ts`, `DailyGoalsCard.tsx`)
 - [ ] Schritt 7 — Rezepte Weg A + Weg B, verschlüsselt auf relay.mojobus.co, Navigation (`recipes.ts`, `recipeCrypto.ts`, `IngredientPicker.tsx`, `useRecipes.ts`, `usePublishRecipe.ts`, `RecipeForm.tsx`, `RecipeList.tsx`, `AppNav.tsx`, `RecipesPage.tsx`, `NIP.md`, Anpassung `AppRouter.tsx` + `Index.tsx`)
 - [ ] Schritt 8 — PWA-Grundlagen & Deployment-Vorbereitung (`manifest.webmanifest`, Icons, Anpassung `index.html`)
