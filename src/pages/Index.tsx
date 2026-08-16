@@ -4,6 +4,7 @@ import { APP_NAME } from "@/config/app";
 import type { FoodItem } from "@/types/nutrition";
 import { FoodSearch } from "@/components/FoodSearch";
 import { FpeCalculatorCard } from "@/components/FpeCalculatorCard";
+import { MealDiary } from "@/components/MealDiary";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -44,6 +45,8 @@ const Index = () => {
             <FpeCalculatorCard item={selectedItem} amountG={amountG} />
           </div>
         )}
+
+        <MealDiary />
       </div>
     </div>
   );
