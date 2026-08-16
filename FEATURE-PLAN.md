@@ -219,5 +219,5 @@ Es sollte ein JSON-Objekt mit Produkten in der Konsole erscheinen. Zusätzlich: 
 - [x] Schritt 4 — FPE-Rechner Oberfläche (`FoodSearch.tsx`, `FpeCalculatorCard.tsx`, Neufassung `Index.tsx`)
 - [x] Schritt 5 — Mahlzeiten-Tagebuch (`useMealDiary.ts`, `MealDiary.tsx`)
 - [x] Schritt 6 — Dashboard mit Tageszielen (`src/config/goals.ts`, `useDailyGoals.ts`, `DailyGoalsCard.tsx`)
-- [ ] Schritt 7 — Verschlüsselte Rezepte auf relay.mojobus.co (`recipes.ts`, `recipeCrypto.ts`, `useRecipes.ts`, `usePublishRecipe.ts`, `RecipeForm.tsx`, `RecipeList.tsx`, `RecipesPage.tsx`, `NIP.md`)
+- [x] Schritt 7 — Verschlüsselte Rezepte auf relay.mojobus.co (`recipes.ts`, `recipeCrypto.ts`, `useRecipes.ts`, `usePublishRecipe.ts`, `RecipeForm.tsx`, `RecipeList.tsx`, `RecipesPage.tsx`, `NIP.md`)
 - [ ] Schritt 8 — PWA-Grundlagen & Deployment-Vorbereitung (`manifest.webmanifest`, Icons, Anpassung `index.html`)
