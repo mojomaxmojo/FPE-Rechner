@@ -11,7 +11,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { useManualIngredients } from "@/hooks/useManualIngredients";
+import { usePublishIngredient } from "@/hooks/usePublishIngredient";
 import type { FoodItem, Ingredient } from "@/types/nutrition";
 
 interface IngredientPickerProps {
@@ -52,7 +52,7 @@ function parseNonNegativeNumber(value: string): number | null {
 
 export function IngredientPicker({ onAdd }: IngredientPickerProps) {
   const [activeTab, setActiveTab] = useState("search");
-  const { saveIngredient } = useManualIngredients();
+  const publishIngredient = usePublishIngredient();
 
   // Weg A
   const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
@@ -118,19 +118,27 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
       source: "manual",
     };
 
+    const addToRecipe = () => {
+      onAdd(ingredient);
+      setManualName("");
+      setManualAmountG("100");
+      setManualNutrients(emptyManualNutrients);
+    };
+
     if (saveToLibrary) {
       // Store with a reference amount of 100g so it can be reused with any amount.
-      saveIngredient({
+      const libraryIngredient: Ingredient = {
         ...ingredient,
         id: `${baseId}-lib`,
         amountG: 100,
+      };
+      publishIngredient.mutate(libraryIngredient, {
+        onSuccess: addToRecipe,
+        onError: addToRecipe,
       });
+    } else {
+      addToRecipe();
     }
-
-    onAdd(ingredient);
-    setManualName("");
-    setManualAmountG("100");
-    setManualNutrients(emptyManualNutrients);
   };
 
   return (

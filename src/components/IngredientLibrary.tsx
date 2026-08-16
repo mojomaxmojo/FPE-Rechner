@@ -5,14 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Ingredient } from "@/types/nutrition";
-import { Trash2, Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 
 interface IngredientLibraryProps {
   onSelect: (ingredient: Ingredient) => void;
 }
 
 export function IngredientLibrary({ onSelect }: IngredientLibraryProps) {
-  const { ingredients, removeIngredient } = useManualIngredients();
+  const { data: ingredients, isLoading, error } = useManualIngredients();
   const [amountG, setAmountG] = useState<string>("100");
 
   const parseAmount = (value: string): number | null => {
@@ -36,10 +36,27 @@ export function IngredientLibrary({ onSelect }: IngredientLibraryProps) {
     onSelect(ingredient);
   };
 
-  if (ingredients.length === 0) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        Zutaten werden geladen…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p className="text-sm text-destructive">
+        Fehler beim Laden der gespeicherten Zutaten.
+      </p>
+    );
+  }
+
+  if (!ingredients || ingredients.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        Noch keine gespeicherten Zutaten. Erstelle eine manuelle Zutat und speichere sie.
+        Noch keine gespeicherten Zutaten. Erstelle eine manuelle Zutat und aktiviere „Zutat für spätere Rezepte speichern“.
       </p>
     );
   }
@@ -71,24 +88,14 @@ export function IngredientLibrary({ onSelect }: IngredientLibraryProps) {
                     {ingredient.nutrientsPer100g.fatG}g Fett / 100g
                   </p>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleAdd(ingredient)}
-                    aria-label="Zutat verwenden"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeIngredient(ingredient.id)}
-                    aria-label="Zutat löschen"
-                  >
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleAdd(ingredient)}
+                  aria-label="Zutat verwenden"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
               </div>
             </CardContent>
           </Card>

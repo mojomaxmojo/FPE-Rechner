@@ -2,23 +2,26 @@ import { useMutation, type UseMutationResult } from "@tanstack/react-query";
 import { useNostr } from "@nostrify/react";
 import { nip19 } from "nostr-tools";
 import { useCurrentUser } from "./useCurrentUser";
-import { RECIPE_EVENT_KIND, RECIPE_RELAY_URL } from "@/config/recipes";
-import { FPE_CLIENT_TAG } from "@/config/ingredients";
+import {
+  INGREDIENT_EVENT_KIND,
+  INGREDIENT_RELAY_URL,
+  FPE_CLIENT_TAG,
+} from "@/config/ingredients";
 import { AUTHORIZED_NPUBS } from "@/config/app";
-import { encryptRecipeForRecipients } from "@/lib/recipeCrypto";
-import type { Recipe } from "@/types/nutrition";
+import { encryptIngredientForRecipients } from "@/lib/ingredientCrypto";
+import type { Ingredient } from "@/types/nutrition";
 import type { NostrEvent } from "@nostrify/nostrify";
 
-export function usePublishRecipe(): UseMutationResult<
+export function usePublishIngredient(): UseMutationResult<
   NostrEvent,
   Error,
-  Recipe
+  Ingredient
 > {
   const { nostr } = useNostr();
   const { user } = useCurrentUser();
 
   return useMutation({
-    mutationFn: async (recipe: Recipe) => {
+    mutationFn: async (ingredient: Ingredient) => {
       if (!user) {
         throw new Error("Nicht eingeloggt");
       }
@@ -31,32 +34,32 @@ export function usePublishRecipe(): UseMutationResult<
         return null;
       }).filter((pubkey): pubkey is string => pubkey !== null);
 
-      const encryptedMap = await encryptRecipeForRecipients(
-        recipe,
+      const encryptedMap = await encryptIngredientForRecipients(
+        ingredient,
         recipientPubkeys,
         user.signer,
       );
 
       const event = await user.signer.signEvent({
-        kind: RECIPE_EVENT_KIND,
+        kind: INGREDIENT_EVENT_KIND,
         content: JSON.stringify(encryptedMap),
         tags: [
-          ["d", recipe.id],
+          ["d", ingredient.id],
           ["client", FPE_CLIENT_TAG],
         ],
         created_at: Math.floor(Date.now() / 1000),
       });
 
-      const relay = nostr.relay(RECIPE_RELAY_URL);
+      const relay = nostr.relay(INGREDIENT_RELAY_URL);
       await relay.event(event);
 
       return event;
     },
     onError: (error) => {
-      console.error("Failed to publish recipe:", error);
+      console.error("Failed to publish ingredient:", error);
     },
     onSuccess: (data) => {
-      console.log("Recipe published successfully:", data);
+      console.log("Ingredient published successfully:", data);
     },
   });
 }
