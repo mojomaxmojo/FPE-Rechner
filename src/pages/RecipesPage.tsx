@@ -6,6 +6,7 @@ import { AppNav } from "@/components/AppNav";
 import { RecipeForm } from "@/components/RecipeForm";
 import { RecipeList } from "@/components/RecipeList";
 import { Button } from "@/components/ui/button";
+import type { Recipe } from "@/types/nutrition";
 
 export default function RecipesPage() {
   useSeoMeta({
@@ -14,6 +15,33 @@ export default function RecipesPage() {
   });
 
   const [showForm, setShowForm] = useState(false);
+  const [editingRecipe, setEditingRecipe] = useState<Recipe | undefined>(undefined);
+
+  const handleEdit = (recipe: Recipe) => {
+    setEditingRecipe(recipe);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSaved = () => {
+    setShowForm(false);
+    setEditingRecipe(undefined);
+  };
+
+  const handleCancel = () => {
+    setShowForm(false);
+    setEditingRecipe(undefined);
+  };
+
+  const toggleForm = () => {
+    if (showForm) {
+      setShowForm(false);
+      setEditingRecipe(undefined);
+    } else {
+      setEditingRecipe(undefined);
+      setShowForm(true);
+    }
+  };
 
   return (
     <AccessGate>
@@ -27,13 +55,19 @@ export default function RecipesPage() {
             </p>
           </div>
 
-          <Button onClick={() => setShowForm((s) => !s)} className="w-full">
+          <Button onClick={toggleForm} className="w-full">
             {showForm ? "Formular ausblenden" : "Neues Rezept erstellen"}
           </Button>
 
-          {showForm && <RecipeForm onSaved={() => setShowForm(false)} />}
+          {showForm && (
+            <RecipeForm
+              recipeToEdit={editingRecipe}
+              onSaved={handleSaved}
+              onCancel={handleCancel}
+            />
+          )}
 
-          <RecipeList />
+          <RecipeList onEdit={handleEdit} />
         </div>
       </div>
     </AccessGate>

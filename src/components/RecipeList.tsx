@@ -1,6 +1,8 @@
 import { useRecipes } from "@/hooks/useRecipes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Pencil } from "lucide-react";
+import type { Recipe } from "@/types/nutrition";
 import {
   sumIngredientNutrients,
   calculateFpe,
@@ -8,7 +10,11 @@ import {
   calculateCalories,
 } from "@/lib/fpe";
 
-export function RecipeList() {
+interface RecipeListProps {
+  onEdit: (recipe: Recipe) => void;
+}
+
+export function RecipeList({ onEdit }: RecipeListProps) {
   const { data: recipes, isLoading, error } = useRecipes();
 
   if (isLoading) {
@@ -46,8 +52,16 @@ export function RecipeList() {
 
         return (
           <Card key={recipe.id}>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-start justify-between gap-2">
               <CardTitle>{recipe.name}</CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onEdit(recipe)}
+                aria-label="Rezept bearbeiten"
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               {recipe.description && (

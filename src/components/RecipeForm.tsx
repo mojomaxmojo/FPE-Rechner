@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePublishRecipe } from "@/hooks/usePublishRecipe";
 import { IngredientPicker } from "./IngredientPicker";
 import { Input } from "@/components/ui/input";
@@ -16,16 +16,28 @@ import {
 import { Trash2 } from "lucide-react";
 
 interface RecipeFormProps {
+  recipeToEdit?: Recipe;
   onSaved?: () => void;
+  onCancel?: () => void;
 }
 
-export function RecipeForm({ onSaved }: RecipeFormProps) {
+export function RecipeForm({ recipeToEdit, onSaved, onCancel }: RecipeFormProps) {
   const publishRecipe = usePublishRecipe();
+  const isEditing = Boolean(recipeToEdit);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [instructions, setInstructions] = useState("");
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
+  useEffect(() => {
+    if (recipeToEdit) {
+      setName(recipeToEdit.name);
+      setDescription(recipeToEdit.description ?? "");
+      setInstructions(recipeToEdit.instructions ?? "");
+      setIngredients(recipeToEdit.ingredients);
+    }
+  }, [recipeToEdit]);
 
   const totals = sumIngredientNutrients(ingredients);
   const totalFpe = calculateFpe(totals.fatG, totals.proteinG);
@@ -40,24 +52,28 @@ export function RecipeForm({ onSaved }: RecipeFormProps) {
     setIngredients((prev) => prev.filter((i) => i.id !== id));
   };
 
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setInstructions("");
+    setIngredients([]);
+  };
+
   const handleSave = () => {
     if (name.trim().length === 0 || ingredients.length === 0) return;
 
     const recipe: Recipe = {
-      id: `recipe-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      id: recipeToEdit?.id ?? `recipe-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       name: name.trim(),
       description: description.trim() || undefined,
       instructions: instructions.trim() || undefined,
       ingredients,
-      createdAtMs: Date.now(),
+      createdAtMs: recipeToEdit?.createdAtMs ?? Date.now(),
     };
 
     publishRecipe.mutate(recipe, {
       onSuccess: () => {
-        setName("");
-        setDescription("");
-        setInstructions("");
-        setIngredients([]);
+        resetForm();
         onSaved?.();
       },
     });
@@ -68,7 +84,7 @@ export function RecipeForm({ onSaved }: RecipeFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Neues Rezept</CardTitle>
+        <CardTitle>{isEditing ? "Rezept bearbeiten" : "Neues Rezept"}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="space-y-1">
@@ -147,9 +163,24 @@ export function RecipeForm({ onSaved }: RecipeFormProps) {
           </div>
         </div>
 
-        <Button onClick={handleSave} disabled={!canSave || publishRecipe.isPending} className="w-full">
-          {publishRecipe.isPending ? "Wird gespeichert…" : "Rezept speichern"}
-        </Button>
+        <div className="flex gap-3">
+          {isEditing && (
+            <Button variant="outline" onClick={onCancel} className="flex-1">
+              Abbrechen
+            </Button>
+          )}
+          <Button
+            onClick={handleSave}
+            disabled={!canSave || publishRecipe.isPending}
+            className="flex-1"
+          >
+            {publishRecipe.isPending
+              ? "Wird gespeichert…"
+              : isEditing
+                ? "Änderungen speichern"
+                : "Rezept speichern"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
