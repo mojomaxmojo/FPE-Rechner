@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { FoodSearch } from "./FoodSearch";
+import { IngredientLibrary } from "./IngredientLibrary";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { useManualIngredients } from "@/hooks/useManualIngredients";
 import type { FoodItem, Ingredient } from "@/types/nutrition";
 
 interface IngredientPickerProps {
@@ -49,6 +52,7 @@ function parseNonNegativeNumber(value: string): number | null {
 
 export function IngredientPicker({ onAdd }: IngredientPickerProps) {
   const [activeTab, setActiveTab] = useState("search");
+  const { saveIngredient } = useManualIngredients();
 
   // Weg A
   const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
@@ -58,6 +62,7 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
   const [manualName, setManualName] = useState("");
   const [manualAmountG, setManualAmountG] = useState<string>("100");
   const [manualNutrients, setManualNutrients] = useState<ManualNutrientFields>(emptyManualNutrients);
+  const [saveToLibrary, setSaveToLibrary] = useState(true);
 
   const handleAddFromSearch = () => {
     const amount = parsePositiveInt(searchAmountG);
@@ -97,8 +102,10 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
   const handleAddManual = () => {
     if (!manualValid) return;
 
+    const baseId = `manual-${Date.now()}`;
+
     const ingredient: Ingredient = {
-      id: `manual-${Date.now()}`,
+      id: baseId,
       name: manualName.trim(),
       amountG: parsedManual.amountG!,
       nutrientsPer100g: {
@@ -111,6 +118,15 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
       source: "manual",
     };
 
+    if (saveToLibrary) {
+      // Store with a reference amount of 100g so it can be reused with any amount.
+      saveIngredient({
+        ...ingredient,
+        id: `${baseId}-lib`,
+        amountG: 100,
+      });
+    }
+
     onAdd(ingredient);
     setManualName("");
     setManualAmountG("100");
@@ -119,9 +135,10 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
+      <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="search">Aus Suche</TabsTrigger>
         <TabsTrigger value="manual">Manuell</TabsTrigger>
+        <TabsTrigger value="library">Gespeichert</TabsTrigger>
       </TabsList>
 
       <TabsContent value="search" className="space-y-3">
@@ -247,9 +264,28 @@ export function IngredientPicker({ onAdd }: IngredientPickerProps) {
           </div>
         </div>
 
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="save-to-library"
+            checked={saveToLibrary}
+            onCheckedChange={(checked) => setSaveToLibrary(checked === true)}
+          />
+          <Label htmlFor="save-to-library" className="text-sm font-normal">
+            Zutat für spätere Rezepte speichern
+          </Label>
+        </div>
+
         <Button onClick={handleAddManual} disabled={!manualValid} className="w-full">
           Zutat hinzufügen
         </Button>
+      </TabsContent>
+
+      <TabsContent value="library" className="space-y-3">
+        <IngredientLibrary
+          onSelect={(ingredient) => {
+            onAdd(ingredient);
+          }}
+        />
       </TabsContent>
     </Tabs>
   );
