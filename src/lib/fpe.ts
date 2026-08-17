@@ -27,6 +27,20 @@ export function calculateCalories(
 }
 
 /**
+ * Calculate calories from protein only.
+ */
+export function calculateCaloriesFromProtein(proteinG: number): number {
+  return proteinG * 4;
+}
+
+/**
+ * Calculate calories from fat only.
+ */
+export function calculateCaloriesFromFat(fatG: number): number {
+  return fatG * 9;
+}
+
+/**
  * Calculate macro percentages from a NutrientValues object.
  */
 export function calculateMacroPercentages(n: NutrientValues): {

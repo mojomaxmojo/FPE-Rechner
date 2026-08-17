@@ -12,7 +12,10 @@ import {
   calculateFpe,
   calculateNetCarbs,
   calculateCalories,
+  calculateCaloriesFromProtein,
+  calculateCaloriesFromFat,
 } from "@/lib/fpe";
+import { getExtendedBolusDuration } from "@/config/fpeExtendedBolus";
 import { Trash2 } from "lucide-react";
 
 interface RecipeFormProps {
@@ -43,6 +46,9 @@ export function RecipeForm({ recipeToEdit, onSaved, onCancel }: RecipeFormProps)
   const totalFpe = calculateFpe(totals.fatG, totals.proteinG);
   const totalNetCarbs = calculateNetCarbs(totals.carbsG, totals.fiberG);
   const totalKcal = calculateCalories(totals.carbsG, totals.proteinG, totals.fatG);
+  const kcalFromProtein = calculateCaloriesFromProtein(totals.proteinG);
+  const kcalFromFat = calculateCaloriesFromFat(totals.fatG);
+  const bolusDuration = getExtendedBolusDuration(totalFpe);
 
   const handleAddIngredient = (ingredient: Ingredient) => {
     setIngredients((prev) => [...prev, ingredient]);
@@ -167,7 +173,7 @@ export function RecipeForm({ recipeToEdit, onSaved, onCancel }: RecipeFormProps)
           <IngredientPicker onAdd={handleAddIngredient} />
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="rounded-xl bg-muted p-3 text-center">
             <p className="text-xs text-muted-foreground">kcal</p>
             <p className="text-lg font-semibold">{Math.round(totalKcal)}</p>
@@ -179,6 +185,29 @@ export function RecipeForm({ recipeToEdit, onSaved, onCancel }: RecipeFormProps)
           <div className="rounded-xl bg-muted p-3 text-center">
             <p className="text-xs text-muted-foreground">FPE</p>
             <p className="text-lg font-semibold">{totalFpe.toFixed(2)}</p>
+          </div>
+          <div className="rounded-xl bg-muted p-3 text-center">
+            <p className="text-xs text-muted-foreground">Bolus-Dauer</p>
+            <p className="text-sm font-semibold leading-tight">{bolusDuration}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-xl bg-muted p-3 text-center">
+            <p className="text-xs text-muted-foreground">Eiweiß</p>
+            <p className="text-lg font-semibold">{totals.proteinG.toFixed(1)}g</p>
+          </div>
+          <div className="rounded-xl bg-muted p-3 text-center">
+            <p className="text-xs text-muted-foreground">Fett</p>
+            <p className="text-lg font-semibold">{totals.fatG.toFixed(1)}g</p>
+          </div>
+          <div className="rounded-xl bg-muted p-3 text-center">
+            <p className="text-xs text-muted-foreground">kcal aus Eiweiß</p>
+            <p className="text-lg font-semibold">{Math.round(kcalFromProtein)}</p>
+          </div>
+          <div className="rounded-xl bg-muted p-3 text-center">
+            <p className="text-xs text-muted-foreground">kcal aus Fett</p>
+            <p className="text-lg font-semibold">{Math.round(kcalFromFat)}</p>
           </div>
         </div>
 
